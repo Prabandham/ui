@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "reactstrap"
 import React, { Component } from 'react'
 
-export default class LandinPageContainer extends Component {
+export default class LandingPageContainer extends Component {
     state = {
         isLoggedIn: false,
     }
