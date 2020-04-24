@@ -22,24 +22,19 @@ export default class App extends Component {
 
   componentDidMount() {
     const isLoggedIn = Boolean(getCookies("authToken"));
-    this.setState({ isLoggedIn })
-  }
-
-  componentWillUnmount() {
-    const isLoggedIn = Boolean(getCookies("authToken"));
-    this.setState({ isLoggedIn })
-  }
+    this.setState({ isLoggedIn });
+  };
 
   toggle = () => {
-    this.setState({ isOpen: !this.state.isOpen })
+    this.setState({ isOpen: !this.state.isOpen });
   };
 
   setLoginStatus = (isLoggedIn) => {
-      this.setState({ isLoggedIn })
+      this.setState({ isLoggedIn });
   };
 
   setShowLoginLink = (value) => {
-    this.setState({showLoginLink: value})
+    this.setState({showLoginLink: value});
   };
 
   logOut = () => {
@@ -47,7 +42,7 @@ export default class App extends Component {
     this.setState({
       isLoggedIn: false,
       showLoginLink: true,
-    })
+    });
   };
 
   renderNavBar = () => {
