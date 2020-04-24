@@ -2,11 +2,8 @@ import { Button, Col, Row } from "reactstrap"
 import React, { Component } from 'react'
 
 export default class LandingPageContainer extends Component {
-    state = {
-        isLoggedIn: false,
-    }
-
     componentDidMount() {
+        this.props.setShowLoginLink(true)
     }
 
     render() {

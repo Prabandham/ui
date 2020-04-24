@@ -22,17 +22,15 @@ const getCookies = (cookieName = "") => {
 const setCookies = (
     cookieName = "",
     value = "",
-    expTime = moment().valueOf() + 3600,
+    expTime = moment().valueOf() + 86400000,
     path = "/"
 ) => {
     if (!cookieName) {
         return false;
     }
     const now = new Date();
-
     now.setTime(expTime);
-
-    document.cookie = `${cookieName} = ${encodeURIComponent(value)} ; expires= ${now.toUTCString()} ; path= ${path}`;
+    document.cookie = `${cookieName} = ${encodeURIComponent(value)}; expires= ${now.toUTCString()} ; path= ${path}`;
 };
 
 const removeCookies = (cookieName = "", path = "/") => {

@@ -9,6 +9,7 @@ const AuthenticatedRoute = ({ component: Component, ...otherProps }) => {
     if (!isAuthenticated()) {
         return <Redirect to="/login" />;
     }
+    otherProps.isLoggedIn = isAuthenticated();
     if (userInfo) {
         otherProps.userInfo = JSON.parse(userInfo);
     } else {
