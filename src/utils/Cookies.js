@@ -22,7 +22,7 @@ const getCookies = (cookieName = "") => {
 const setCookies = (
     cookieName = "",
     value = "",
-    expTime = moment().valueOf() + 86400000,
+    expTime = moment().valueOf() + 43200000,
     path = "/"
 ) => {
     if (!cookieName) {

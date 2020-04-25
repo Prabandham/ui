@@ -16,7 +16,7 @@ export default class App extends Component {
     this.state = {
       isOpen: false,
       isLoggedIn: false,
-      showLoginLink: true,
+      showLoginLink: false,
     }
   }
 

@@ -3,6 +3,7 @@ import {
     Card, CardBody,
     CardTitle, Button, Row, Form, FormGroup, Label, Col, Input, Alert
 } from 'reactstrap';
+import { Redirect } from "react-router-dom";
 import { ApiConstants } from "../ApiConstants";
 import {getCookies, setCookies} from "../utils/Cookies";
 
@@ -14,6 +15,7 @@ export default class LoginPageContainer extends Component {
             password: "",
             loginFailureMessage: "",
             showAlert: false,
+            loggedIn: false
         };
     }
 
@@ -45,14 +47,17 @@ export default class LoginPageContainer extends Component {
 
     onLoginClick = () => {
         const { setLoginStatus } = this.props;
-        ApiConstants.login(this.state)
+        const { email, password } = this.state;
+        ApiConstants.login({email: email, password: password})
             .then(response => {
                 const data = response.data;
                 setCookies("authToken", `${data.authToken}`);
                 setCookies("userId", `${data.userId}`);
                 setCookies("userInfo", `${JSON.stringify(data.userInfo)}`);
-                this.props.history.push("/dashboard");
                 setLoginStatus(true);
+                this.setState({
+                    loggedIn: true
+                })
             })
             .catch(error => {
                 const status = error.response.status;
@@ -79,7 +84,10 @@ export default class LoginPageContainer extends Component {
     };
 
     render() {
-        const { email, password } = this.state;
+        const { email, password, loggedIn } = this.state;
+        if(loggedIn) {
+            return (<Redirect to={"/dashboard"} />)
+        }
         return (
             <Row className="d-flex justify-content-center">
                 <Col xs="12" sm="6">
