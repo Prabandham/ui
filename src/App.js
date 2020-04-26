@@ -1,4 +1,3 @@
-//Test
 import {
   Collapse,
   Nav,
