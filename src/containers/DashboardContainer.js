@@ -1,17 +1,23 @@
-import React, { Component } from 'react'
-import {ApiConstants} from "../ApiConstants";
 import {
-    Nav, NavItem, NavLink,
-    Row, Col
+    Col,
+    Nav,
+    NavItem,
+    NavLink,
+    Row
 } from "reactstrap";
-import axios from "axios";
-import _ from "lodash";
-import AnalyticsComponent from "../components/AnalyticsComponent";
-import ConfigComponent from "../components/ConfigComponent";
-import IncomeComponent from "../components/IncomeComponent";
-import ExpenseComponent from "../components/ExpenseComponent";
-import {removeAllCookies} from "../utils/Cookies";
+import React, { Component } from 'react'
 
+import AnalyticsComponent from "../components/AnalyticsComponent";
+import { ApiConstants } from "../ApiConstants";
+import ConfigComponent from "../components/ConfigComponent";
+import ExpenseComponent from "../components/ExpenseComponent";
+import IncomeComponent from "../components/IncomeComponent";
+import _ from "lodash";
+import axios from "axios";
+import { removeAllCookies } from "../utils/Cookies";
+
+// Global axios interceptor that will log the user out when session expires.
+// TODO need to show a falsh as well when this happens.
 axios.interceptors.response.use(response => {
     return response;
 }, error => {
@@ -26,20 +32,30 @@ export default class DashboardContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            incomeTypes: [],
             incomeSources: [],
             expenseTypes: [],
-            activeTab: "analytics"
+            accounts: [],
+            activeTab: "analytics",
+            userId: ""
         }
-    }
+    };
 
     componentDidMount() {
         if (!this.props.isLoggedIn) {
             this.props.history.push("/login")
         }
-        this.getExpenseTypes();
-        this.getIncomeTypes();
-        this.getIncomeSources()
+        if (this.state.userId) {
+            this.getIncomeSources();
+            this.getExpenseTypes();
+            this.getAccounts();
+        }
+    };
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.userInfo.ID !== prevState.userId) {
+            return { userId: nextProps.userInfo.ID };
+        }
+        else return null;
     }
 
     getExpenseTypes = () => {
@@ -54,22 +70,9 @@ export default class DashboardContainer extends Component {
             })
     };
 
-    getIncomeTypes = () => {
-        const { userInfo } = this.props;
-        ApiConstants.getIncomeTypes(userInfo.ID)
-            .then(response => {
-                this.setState({
-                    incomeTypes: response.data,
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
-    };
-
     getIncomeSources = () => {
-        const { userInfo } = this.props;
-        ApiConstants.getIncomeSources(userInfo.ID)
+        const { userId } = this.state;
+        ApiConstants.getIncomeSources(userId)
             .then(response => {
                 this.setState({
                     incomeSources: response.data,
@@ -80,17 +83,47 @@ export default class DashboardContainer extends Component {
             })
     };
 
-    addIncomeType = (name) => {
-        const { userInfo } = this.props;
-        const params = { name: name };
-        ApiConstants.addIncomeType(userInfo.ID, params)
+    getAccounts = () => {
+        const { userId } = this.state;
+        ApiConstants.getAccounts(userId)
             .then(response => {
-                let incomeTypes = this.state.incomeTypes;
-                incomeTypes.push(response.data);
                 this.setState({
-                    incomeTypes
+                    accounts: response.data,
                 })
             })
+            .catch(error => {
+                console.log(error)
+            })
+    };
+
+    addIncomeSource = (name) => {
+        const { userId } = this.state;
+        const params = { name: name };
+        ApiConstants.addIncomeSource(userId, params)
+            .then(response => {
+                let incomeSources = this.state.incomeSources;
+                incomeSources.push(response.data);
+                this.setState({
+                    incomeSources
+                })
+            })
+    };
+
+    addAccount = (name) => {
+        const { userId } = this.state;
+        const params = { name: name };
+        ApiConstants.addAccount(userId, params)
+            .then(response => {
+                let accounts = this.state.accounts;
+                accounts.push(response.data);
+                this.setState({
+                    accounts
+                })
+            })
+    };
+
+    addIncome = (params) => {
+        console.log(params);
     };
 
     setActiveTab = (event) => {
@@ -100,15 +133,16 @@ export default class DashboardContainer extends Component {
         });
     };
 
+
     render() {
-        const { activeTab, incomeTypes, incomeSources } = this.state;
+        const { accounts, activeTab, incomeSources } = this.state;
         const navItems = ["analytics", "expense", "income", "config"];
         return (
             <Row>
                 <Col>
                     <Nav tabs fill className="fixed-bottom bg-light">
                         {_.map(navItems, (item, index) => {
-                            return(
+                            return (
                                 <NavItem key={index}>
                                     <NavLink
                                         aria-controls={item}
@@ -140,7 +174,7 @@ export default class DashboardContainer extends Component {
                             role="tabpanel"
                             aria-labelledby="nav-expense-tab"
                         >
-                            <ExpenseComponent/>
+                            <ExpenseComponent />
                         </div>
                         <div
                             className={activeTab === "income" ? "tab-pane fade show active" : "tab-pane fade"}
@@ -149,7 +183,8 @@ export default class DashboardContainer extends Component {
                             aria-labelledby="nav-income-tab"
                         >
                             <IncomeComponent
-                                incomeTypes={incomeTypes}
+                                addIncome={this.addIncome}
+                                accounts={accounts}
                                 incomeSources={incomeSources}
                             />
                         </div>
@@ -160,8 +195,9 @@ export default class DashboardContainer extends Component {
                             aria-labelledby="nav-config-tab"
                         >
                             <ConfigComponent
-                                addIncomeType={this.addIncomeType}
-                                incomeTypes={incomeTypes}
+                                accounts={accounts}
+                                addAccount={this.addAccount}
+                                addIncomeSource={this.addIncomeSource}
                                 incomeSources={incomeSources}
                             />
                         </div>

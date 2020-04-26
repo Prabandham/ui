@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 
 export default class LandingPageContainer extends Component {
     componentDidMount() {
-        this.props.setShowLoginLink(true)
+        this.props.setShowLoginLink(!this.props.isLoggedIn)
     }
 
     render() {

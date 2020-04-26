@@ -21,15 +21,6 @@ export const ApiConstants = {
             url: `${BACKEND_URL}/auth/expense_types`
         })
     },
-    getIncomeTypes: (userId) => {
-        return axios({
-            method: "get",
-            headers: {
-                "Authorization": `Bearer ${authToken}`
-            },
-            url: `${BACKEND_URL}/auth/income_types/${userId}`
-        })
-    },
     getIncomeSources: (userId) => {
         return axios({
             method: "get",
@@ -39,14 +30,33 @@ export const ApiConstants = {
             url: `${BACKEND_URL}/auth/income_sources/${userId}`
         })
     },
-    addIncomeType: (userId, params) => {
+    addIncomeSource: (userId, params) => {
         return axios({
             method: "post",
             headers: {
                 "Authorization": `Bearer ${authToken}`
             },
-            url: `${BACKEND_URL}/auth/income_type/${userId}`,
+            url: `${BACKEND_URL}/auth/income_source/${userId}`,
             data: params
         })
-    }
+    },
+		getAccounts: (userId) => {
+			return axios({
+				method: "get",
+				headers: {
+					"Authorization": `Bearer ${authToken}`
+				},
+				url: `${BACKEND_URL}/auth/accounts/${userId}`
+			})
+		},
+		addAccount: (userId, params) => {
+			return axios({
+				method: "post",
+				headers: {
+					"Authorization": `Bearer ${authToken}`
+				},
+				url: `${BACKEND_URL}/auth/account/${userId}`,
+				data: params
+			})
+		}
 };
