@@ -44,19 +44,12 @@ export default class DashboardContainer extends Component {
         if (!this.props.isLoggedIn) {
             this.props.history.push("/login")
         }
-        if (this.state.userId) {
+        if (this.props.userInfo.ID !== "") {
             this.getIncomeSources();
             this.getExpenseTypes();
             this.getAccounts();
         }
     };
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.userInfo.ID !== prevState.userId) {
-            return { userId: nextProps.userInfo.ID };
-        }
-        else return null;
-    }
 
     getExpenseTypes = () => {
         ApiConstants.getExpenseTypes()
@@ -71,8 +64,8 @@ export default class DashboardContainer extends Component {
     };
 
     getIncomeSources = () => {
-        const { userId } = this.state;
-        ApiConstants.getIncomeSources(userId)
+        const { userInfo } = this.props;
+        ApiConstants.getIncomeSources(userInfo.ID)
             .then(response => {
                 this.setState({
                     incomeSources: response.data,
@@ -84,8 +77,8 @@ export default class DashboardContainer extends Component {
     };
 
     getAccounts = () => {
-        const { userId } = this.state;
-        ApiConstants.getAccounts(userId)
+        const { userInfo } = this.props;
+        ApiConstants.getAccounts(userInfo.ID)
             .then(response => {
                 this.setState({
                     accounts: response.data,
@@ -97,9 +90,9 @@ export default class DashboardContainer extends Component {
     };
 
     addIncomeSource = (name) => {
-        const { userId } = this.state;
+        const { userInfo } = this.props;
         const params = { name: name };
-        ApiConstants.addIncomeSource(userId, params)
+        ApiConstants.addIncomeSource(userInfo.ID, params)
             .then(response => {
                 let incomeSources = this.state.incomeSources;
                 incomeSources.push(response.data);
@@ -110,9 +103,9 @@ export default class DashboardContainer extends Component {
     };
 
     addAccount = (name) => {
-        const { userId } = this.state;
+        const { userInfo } = this.props;
         const params = { name: name };
-        ApiConstants.addAccount(userId, params)
+        ApiConstants.addAccount(userInfo.ID, params)
             .then(response => {
                 let accounts = this.state.accounts;
                 accounts.push(response.data);

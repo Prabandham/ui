@@ -1,11 +1,22 @@
-import React, { Component } from 'react'
 import {
-    Card, CardBody,
-    CardTitle, Button, Row, Form, FormGroup, Label, Col, Input, Alert
+    Alert,
+    Button,
+    Card,
+    CardBody,
+    CardTitle,
+    Col,
+    Form,
+    FormGroup,
+    Input,
+    Label,
+    Progress,
+    Row
 } from 'reactstrap';
-import { Redirect } from "react-router-dom";
+import React, { Component } from 'react'
+import { getCookies, setCookies } from "../utils/Cookies";
+
 import { ApiConstants } from "../ApiConstants";
-import {getCookies, setCookies} from "../utils/Cookies";
+import { Redirect } from "react-router-dom";
 
 export default class LoginPageContainer extends Component {
     constructor(props) {
@@ -15,7 +26,8 @@ export default class LoginPageContainer extends Component {
             password: "",
             loginFailureMessage: "",
             showAlert: false,
-            loggedIn: false
+            loggedIn: false,
+            loginPerformed: false,
         };
     }
 
@@ -41,6 +53,7 @@ export default class LoginPageContainer extends Component {
     onAlertDismiss = () => {
         this.setState({
             showAlert: false,
+            loginPerformed: false,
             loginFailureMessage: "",
         })
     };
@@ -48,15 +61,17 @@ export default class LoginPageContainer extends Component {
     onLoginClick = () => {
         const { setLoginStatus } = this.props;
         const { email, password } = this.state;
-        ApiConstants.login({email: email, password: password})
+        this.setState({ loginPerformed: true });
+        ApiConstants.login({ email: email, password: password })
             .then(response => {
                 const data = response.data;
                 setCookies("authToken", `${data.authToken}`);
                 setCookies("userId", `${data.userId}`);
                 setCookies("userInfo", `${JSON.stringify(data.userInfo)}`);
-                setLoginStatus(true);
+                setLoginStatus(true, data.userInfo);
                 this.setState({
-                    loggedIn: true
+                    loggedIn: true,
+                    loginPerformed: false,
                 })
             })
             .catch(error => {
@@ -64,7 +79,8 @@ export default class LoginPageContainer extends Component {
                 if (status === 401 || status === 400) {
                     this.setState({
                         loginFailureMessage: error.response.data.error,
-                        showAlert: true
+                        showAlert: true,
+                        loginPerformed: false,
                     })
                 }
             });
@@ -72,7 +88,7 @@ export default class LoginPageContainer extends Component {
 
     showLoginFailureMessage = () => {
         const { loginFailureMessage, showAlert } = this.state;
-        return(
+        return (
             <div>
                 {showAlert &&
                     <Alert color="danger" isOpen={showAlert} toggle={this.onAlertDismiss}>
@@ -84,13 +100,19 @@ export default class LoginPageContainer extends Component {
     };
 
     render() {
-        const { email, password, loggedIn } = this.state;
-        if(loggedIn) {
-            return (<Redirect to={"/dashboard"} />)
-        }
+        const { email, password, loggedIn, loginPerformed } = this.state;
         return (
             <Row className="d-flex justify-content-center">
                 <Col xs="12" sm="6">
+                    {loggedIn && Boolean(getCookies("authToken")) ?
+                        (<Redirect to={"/dashboard"} />)
+                        :
+                        loginPerformed ?
+                            (<Progress multi style={{ "height": "5px" }}>
+                                <Progress animated bar color="warning" value="50" />
+                                <Progress animated bar color="info" value="50" />
+                            </Progress>) : null
+                    }
                     {this.showLoginFailureMessage()}
                     <Card>
                         <h3 className="text-center">

@@ -1,8 +1,17 @@
 import axios from "axios";
-import {getCookies} from "./utils/Cookies";
+import { getCookies } from "./utils/Cookies";
 
 const BACKEND_URL = "http://localhost:8080";
-const authToken = getCookies("authToken");
+
+const authToken = () => {
+    const authToken = getCookies("authToken");
+    if (authToken === undefined || authToken === null) {
+        setTimeout(() => {
+            authToken();
+        }, 1000);
+    }
+    return authToken
+}
 
 export const ApiConstants = {
     login: (params) => {
@@ -16,7 +25,7 @@ export const ApiConstants = {
         return axios({
             method: "get",
             headers: {
-                "Authorization": `Bearer ${authToken}`
+                "Authorization": `Bearer ${authToken()}`
             },
             url: `${BACKEND_URL}/auth/expense_types`
         })
@@ -25,7 +34,7 @@ export const ApiConstants = {
         return axios({
             method: "get",
             headers: {
-                "Authorization": `Bearer ${authToken}`
+                "Authorization": `Bearer ${authToken()}`
             },
             url: `${BACKEND_URL}/auth/income_sources/${userId}`
         })
@@ -34,29 +43,29 @@ export const ApiConstants = {
         return axios({
             method: "post",
             headers: {
-                "Authorization": `Bearer ${authToken}`
+                "Authorization": `Bearer ${authToken()}`
             },
             url: `${BACKEND_URL}/auth/income_source/${userId}`,
             data: params
         })
     },
-		getAccounts: (userId) => {
-			return axios({
-				method: "get",
-				headers: {
-					"Authorization": `Bearer ${authToken}`
-				},
-				url: `${BACKEND_URL}/auth/accounts/${userId}`
-			})
-		},
-		addAccount: (userId, params) => {
-			return axios({
-				method: "post",
-				headers: {
-					"Authorization": `Bearer ${authToken}`
-				},
-				url: `${BACKEND_URL}/auth/account/${userId}`,
-				data: params
-			})
-		}
+    getAccounts: (userId) => {
+        return axios({
+            method: "get",
+            headers: {
+                "Authorization": `Bearer ${authToken()}`
+            },
+            url: `${BACKEND_URL}/auth/accounts/${userId}`
+        })
+    },
+    addAccount: (userId, params) => {
+        return axios({
+            method: "post",
+            headers: {
+                "Authorization": `Bearer ${authToken()}`
+            },
+            url: `${BACKEND_URL}/auth/account/${userId}`,
+            data: params
+        })
+    }
 };

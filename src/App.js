@@ -21,6 +21,7 @@ export default class App extends Component {
       isOpen: false,
       isLoggedIn: false,
       showLoginLink: false,
+      userInfo: {}
     }
   }
 
@@ -33,8 +34,8 @@ export default class App extends Component {
     this.setState({ isOpen: !this.state.isOpen });
   };
 
-  setLoginStatus = (isLoggedIn) => {
-    this.setState({ isLoggedIn });
+  setLoginStatus = (isLoggedIn, userInfo) => {
+    this.setState({ isLoggedIn, userInfo });
   };
 
   setShowLoginLink = (value) => {
@@ -96,7 +97,7 @@ export default class App extends Component {
                   setShowLoginLink={this.setShowLoginLink}
                 />
               } />
-              <AuthenticatedRoute component={DashboardContainer} exact path="/dashboard" />
+              <AuthenticatedRoute component={DashboardContainer} exact path="/dashboard" userInfo={this.state.userInfo} />
               <Route render={() => <h1 className="text-center text-danger">Page not found</h1>} />
             </Switch>
           </div>
