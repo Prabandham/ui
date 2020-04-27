@@ -18,15 +18,15 @@ import { removeAllCookies } from "../utils/Cookies";
 
 // Global axios interceptor that will log the user out when session expires.
 // TODO need to show a falsh as well when this happens.
-// axios.interceptors.response.use(response => {
-//     return response;
-// }, error => {
-//     if (error.response.status === 401) {
-//         removeAllCookies();
-//         window.location.href = "/";
-//     }
-//     return error;
-// });
+axios.interceptors.response.use(response => {
+    return response;
+}, error => {
+    if (error.response.status === 401) {
+        removeAllCookies();
+        window.location.href = "/";
+    }
+    return error;
+});
 
 export default class DashboardContainer extends Component {
     constructor(props) {
