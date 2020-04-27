@@ -25,7 +25,7 @@ export default class LandingPageContainer extends Component {
                     <br />
                     <Button color="warning">Sign up</Button>
                 </Col>
-                <Col xs="9">
+                <Col xs="9" className="d-none d-sm-block">
                     <div className="text-center">
                         <img src="/images/landing_page_bg.jpg" alt="landing-page-bg" className="img-fluid"></img>
                     </div>

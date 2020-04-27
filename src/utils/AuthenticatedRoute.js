@@ -10,6 +10,9 @@ const AuthenticatedRoute = ({ component: Component, ...otherProps }) => {
         return <Redirect to="/login" />;
     }
     otherProps.isLoggedIn = isAuthenticated();
+    if (otherProps.userInfo.ID === undefined) {
+        otherProps.userInfo = JSON.parse(getCookies("userInfo"));
+    }
     return <Router {...otherProps} render={() => <Component {...otherProps} />} />;
 };
 

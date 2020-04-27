@@ -18,15 +18,15 @@ import { removeAllCookies } from "../utils/Cookies";
 
 // Global axios interceptor that will log the user out when session expires.
 // TODO need to show a falsh as well when this happens.
-axios.interceptors.response.use(response => {
-    return response;
-}, error => {
-    if (error.response.status === 401) {
-        removeAllCookies();
-        window.location.href = "/";
-    }
-    return error;
-});
+// axios.interceptors.response.use(response => {
+//     return response;
+// }, error => {
+//     if (error.response.status === 401) {
+//         removeAllCookies();
+//         window.location.href = "/";
+//     }
+//     return error;
+// });
 
 export default class DashboardContainer extends Component {
     constructor(props) {
@@ -35,6 +35,8 @@ export default class DashboardContainer extends Component {
             incomeSources: [],
             expenseTypes: [],
             accounts: [],
+            incomes: [],
+            expenses: [],
             activeTab: "analytics",
             userId: ""
         }
@@ -102,9 +104,8 @@ export default class DashboardContainer extends Component {
             })
     };
 
-    addAccount = (name) => {
+    addAccount = (params) => {
         const { userInfo } = this.props;
-        const params = { name: name };
         ApiConstants.addAccount(userInfo.ID, params)
             .then(response => {
                 let accounts = this.state.accounts;
@@ -115,20 +116,67 @@ export default class DashboardContainer extends Component {
             })
     };
 
+    getIncomes = () => {
+        const { userInfo } = this.props;
+        ApiConstants.getIncomes(userInfo.ID)
+            .then(response => {
+                this.setState({
+                    incomes: response.data
+                })
+            })
+    }
+
     addIncome = (params) => {
-        console.log(params);
+        const { userInfo } = this.props;
+        ApiConstants.addIncome(userInfo.ID, params)
+            .then(response => {
+                let incomes = this.state.incomes;
+                incomes.push(response.data);
+                this.setState({
+                    incomes
+                })
+            })
     };
+
+    getExpenses = () => {
+        const { userInfo } = this.props;
+        ApiConstants.getExpenses(userInfo.ID)
+            .then(response => {
+                this.setState({
+                    expenses: response.data
+                })
+            })
+    };
+
+    addExpense = (params) => {
+        const { userInfo } = this.props;
+        ApiConstants.addExpense(userInfo.ID, params)
+            .then(response => {
+                let expenses = this.state.expenses;
+                expenses.push(response.data);
+                this.setState({
+                    expenses
+                })
+            })
+    };
+
+
 
     setActiveTab = (event) => {
         const tabName = event.target.id.split("-")[1];
         this.setState({
             activeTab: tabName,
         });
+        if (tabName === "income") {
+            this.getIncomes()
+        }
+        if (tabName === "expense") {
+            this.getExpenses()
+        }
     };
 
-
     render() {
-        const { accounts, activeTab, incomeSources } = this.state;
+        const { accounts, activeTab, incomeSources, incomes, expenseTypes, expenses } = this.state;
         const navItems = ["analytics", "expense", "income", "config"];
         return (
             <Row>
@@ -167,7 +215,12 @@ export default class DashboardContainer extends Component {
                             role="tabpanel"
                             aria-labelledby="nav-expense-tab"
                         >
-                            <ExpenseComponent />
+                            <ExpenseComponent
+                                accounts={accounts}
+                                addExpense={this.addExpense}
+                                expense_types={expenseTypes}
+                                expenses={expenses}
+                            />
                         </div>
                         <div
                             className={activeTab === "income" ? "tab-pane fade show active" : "tab-pane fade"}
@@ -178,6 +231,7 @@ export default class DashboardContainer extends Component {
                             <IncomeComponent
                                 addIncome={this.addIncome}
                                 accounts={accounts}
+                                incomes={incomes}
                                 incomeSources={incomeSources}
                             />
                         </div>

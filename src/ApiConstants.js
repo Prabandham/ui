@@ -67,5 +67,43 @@ export const ApiConstants = {
             url: `${BACKEND_URL}/auth/account/${userId}`,
             data: params
         })
+    },
+    getIncomes: (userId) => {
+        return axios({
+            method: "get",
+            headers: {
+                "Authorization": `Bearer ${authToken()}`
+            },
+            url: `${BACKEND_URL}/auth/incomes/${userId}`
+        })
+    },
+    addIncome: (userId, params) => {
+        return axios({
+            method: "post",
+            headers: {
+                "Authorization": `Bearer ${authToken()}`
+            },
+            url: `${BACKEND_URL}/auth/income/${userId}`,
+            data: params
+        })
+    },
+    getExpenses: (userId) => {
+        return axios({
+            method: "get",
+            headers: {
+                "Authorization": `Bearer ${authToken()}`
+            },
+            url: `${BACKEND_URL}/auth/expenses/${userId}`
+        })
+    },
+    addExpense: (userId, params) => {
+        return axios({
+            method: "post",
+            headers: {
+                "Authorization": `Bearer ${authToken()}`
+            },
+            url: `${BACKEND_URL}/auth/expense/${userId}`,
+            data: params
+        })
     }
 };

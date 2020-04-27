@@ -151,15 +151,13 @@ export default class LoginPageContainer extends Component {
                                     </Col>
                                 </FormGroup>
                             </Form>
-                            <center>
-                                <Button
-                                    className="float-md-right"
-                                    color="info"
-                                    onClick={this.onLoginClick}
-                                >
-                                    Login
+                            <Button
+                                className="float-md-right"
+                                color="info"
+                                onClick={this.onLoginClick}
+                            >
+                                Login
                                 </Button>
-                            </center>
                         </CardBody>
                     </Card>
                 </Col>
