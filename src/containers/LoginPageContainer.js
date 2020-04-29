@@ -16,6 +16,7 @@ import React, { Component } from 'react'
 import { getCookies, setCookies } from "../utils/Cookies";
 
 import { ApiConstants } from "../ApiConstants";
+import { ErrorHandler } from '../utils/ErrorHandler';
 import { Redirect } from "react-router-dom";
 
 export default class LoginPageContainer extends Component {
@@ -78,7 +79,7 @@ export default class LoginPageContainer extends Component {
                 const status = error.response.status;
                 if (status === 401 || status === 400) {
                     this.setState({
-                        loginFailureMessage: error.response.data.error,
+                        loginFailureMessage: ErrorHandler(error),
                         showAlert: true,
                         loginPerformed: false,
                     })

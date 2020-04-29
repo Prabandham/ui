@@ -13,6 +13,20 @@ import AuthenticatedRoute from './utils/AuthenticatedRoute';
 import DashboardContainer from './containers/DashboardContainer';
 import LandingPageContainer from './containers/LandingPageContainer';
 import LoginPageContainer from './containers/LoginPageContainer';
+import axios from "axios";
+
+// Global axios interceptor that will log the user out when session expires.
+// TODO need to show a falsh as well when this happens.
+axios.interceptors.response.use(response => {
+  return response;
+}, error => {
+  if (error.response.status === 401 && window.location.pathname === "/dashboard") {
+    removeAllCookies();
+    window.location.href = "/";
+  }
+  throw error;
+});
+
 
 export default class App extends Component {
   constructor(props) {

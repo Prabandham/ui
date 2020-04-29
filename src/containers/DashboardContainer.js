@@ -10,23 +10,10 @@ import React, { Component } from 'react'
 import AnalyticsComponent from "../components/AnalyticsComponent";
 import { ApiConstants } from "../ApiConstants";
 import ConfigComponent from "../components/ConfigComponent";
+import { ErrorHandler } from '../utils/ErrorHandler';
 import ExpenseComponent from "../components/ExpenseComponent";
 import IncomeComponent from "../components/IncomeComponent";
 import _ from "lodash";
-import axios from "axios";
-import { removeAllCookies } from "../utils/Cookies";
-
-// Global axios interceptor that will log the user out when session expires.
-// TODO need to show a falsh as well when this happens.
-axios.interceptors.response.use(response => {
-    return response;
-}, error => {
-    if (error.response.status === 401) {
-        removeAllCookies();
-        window.location.href = "/";
-    }
-    return error;
-});
 
 export default class DashboardContainer extends Component {
     constructor(props) {
@@ -38,7 +25,8 @@ export default class DashboardContainer extends Component {
             incomes: [],
             expenses: [],
             activeTab: "analytics",
-            userId: ""
+            userId: "",
+            formErrors: {}
         }
     };
 
@@ -102,6 +90,7 @@ export default class DashboardContainer extends Component {
                     incomeSources
                 })
             })
+            .catch(error => { this.setState({ formErrors: { incomeSourceErrors: ErrorHandler(error) } }) });
     };
 
     addAccount = (params) => {
@@ -114,6 +103,7 @@ export default class DashboardContainer extends Component {
                     accounts
                 })
             })
+            .catch(error => { this.setState({ formErrors: { accountErrors: ErrorHandler(error) } }) });
     };
 
     getIncomes = () => {
@@ -160,8 +150,6 @@ export default class DashboardContainer extends Component {
             })
     };
 
-
-
     setActiveTab = (event) => {
         const tabName = event.target.id.split("-")[1];
         this.setState({
@@ -176,7 +164,7 @@ export default class DashboardContainer extends Component {
     };
 
     render() {
-        const { accounts, activeTab, incomeSources, incomes, expenseTypes, expenses } = this.state;
+        const { accounts, activeTab, incomeSources, incomes, expenseTypes, expenses, formErrors } = this.state;
         const navItems = ["analytics", "expense", "income", "config"];
         return (
             <Row>
@@ -245,6 +233,7 @@ export default class DashboardContainer extends Component {
                                 accounts={accounts}
                                 addAccount={this.addAccount}
                                 addIncomeSource={this.addIncomeSource}
+                                formErrors={formErrors}
                                 incomeSources={incomeSources}
                             />
                         </div>

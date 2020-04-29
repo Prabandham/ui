@@ -2,6 +2,7 @@ import {
     Button,
     Col,
     Form,
+    FormFeedback,
     FormGroup,
     Input,
     InputGroup,
@@ -52,6 +53,7 @@ const IncomeSources = (props) => {
                     <InputGroupText onClick={onButtonClick}>Add</InputGroupText>
                 </InputGroupAddon>
             </InputGroup>
+            <FormFeedback style={{ display: props.formErrors.incomeSourceErrors === undefined ? "none" : "block" }}>{props.formErrors.incomeSourceErrors}</FormFeedback>
             <ListGroup className="mt-4">
                 {_.map(props.incomeSources, (type) => {
                     return (
@@ -112,8 +114,6 @@ const AddAccountModal = (props) => {
             ifsc_code: accountIfsc
         }
         props.addAccount(params)
-        // TODO Get response if success only then toggle
-        toggle()
     }
     return (
         <>
