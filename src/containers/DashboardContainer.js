@@ -100,7 +100,8 @@ export default class DashboardContainer extends Component {
                 let accounts = this.state.accounts;
                 accounts.push(response.data);
                 this.setState({
-                    accounts
+                    accounts,
+                    formErrors: {}
                 })
             })
             .catch(error => { this.setState({ formErrors: { accountErrors: ErrorHandler(error) } }) });

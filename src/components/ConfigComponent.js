@@ -1,4 +1,5 @@
 import {
+    Alert,
     Button,
     Col,
     Form,
@@ -17,7 +18,7 @@ import {
     ModalHeader,
     Row,
 } from "reactstrap";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import _ from "lodash";
 
@@ -105,16 +106,40 @@ const AddAccountModal = (props) => {
     const [accountAddress, setAccountAddress] = useState("");
     const [accountBalance, setAccountBalance] = useState(0);
     const [accountIfsc, setAccountIfsc] = useState("");
-    const toggle = () => setModal(!open);
+    const [formValidation, setFormValidation] = useState(false);
+    const [formSubmitted, setFormSubmitted] = useState(false);
+    const toggle = () => {
+        setModal(!open);
+        setFormSubmitted(false);
+        if (formValidation) {
+            setFormValidation(!formValidation);
+        }
+    }
     const onAddAccountClick = () => {
+        setFormSubmitted(true);
         const params = {
             name: accountName,
             address: accountAddress,
-            balance: accountBalance,
+            balance: Number(accountBalance),
             ifsc_code: accountIfsc
         }
         props.addAccount(params)
     }
+
+    // Listen for props changes on formErrors
+    useEffect(() => {
+        // if the props has any errors in it, then show errors.
+        if (props.formErrors.accountErrors !== undefined) {
+            setFormValidation(true)
+        }
+        // If the props has no error in it and the form was submitted then don't show any errors
+        // And close the modal
+        else if (props.formErrors.accountErrors === undefined && formSubmitted) {
+            setFormValidation(false);
+            toggle();
+        }
+    }, [props.formErrors]);
+
     return (
         <>
             <Button
@@ -129,6 +154,11 @@ const AddAccountModal = (props) => {
             <Modal isOpen={open} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Add Expense</ModalHeader>
                 <ModalBody>
+                    {formValidation && props.formErrors.accountErrors !== undefined &&
+                        <Alert color="danger" isOpen={formValidation}>
+                            {props.formErrors.accountErrors}
+                        </Alert>
+                    }
                     <Form>
                         <FormGroup>
                             <Label>Account Name</Label>
