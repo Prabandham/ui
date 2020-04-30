@@ -1,4 +1,5 @@
 import {
+    Alert,
     Button,
     Col,
     Form,
@@ -12,7 +13,7 @@ import {
     Row,
     Table
 } from "reactstrap";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Select from "react-select";
 import _ from "lodash";
@@ -33,17 +34,44 @@ const AddExpenseModal = (props) => {
     const [expenseAmount, setExpenseAmount] = useState(0);
     const [expenseDescription, setExpenseDescription] = useState("");
     const [expenseAccount, setExpenseAccount] = useState("");
-    const toggle = () => setModal(!open);
+    const [formValidation, setFormValidation] = useState(false);
+    const [formSubmitted, setFormSubmitted] = useState(false);
+    const toggle = () => {
+        setModal(!open);
+        setExpenseType("");
+        setExpenseAmount(0);
+        setExpenseDescription("");
+        setExpenseAccount("");
+        setFormSubmitted(false);
+        if (formValidation) {
+            setFormValidation(!formValidation);
+        }
+    };
+
+    // Listen for props changes on formErrors
+    useEffect(() => {
+        // if the props has any errors in it, then show errors.
+        if (props.formErrors.expenseErrors !== undefined) {
+            setFormValidation(true)
+        }
+        // If the props has no error in it and the form was submitted then don't show any errors
+        // And close the modal
+        else if (props.formErrors.expenseErrors === undefined && formSubmitted) {
+            setFormValidation(false);
+            toggle();
+        }
+    }, [props.formErrors]);
+
     const addExpense = () => {
+        setFormSubmitted(true);
         props.addExpense({
             expense_type_id: expenseType,
-            expense_amount: expenseAmount,
+            expense_amount: Number(expenseAmount),
             account_id: expenseAccount,
             description: expenseDescription
         })
-        // Again check if success then close else don't
-        toggle()
     }
+
     return (
         <Row>
             <Col sm="12">
@@ -55,6 +83,11 @@ const AddExpenseModal = (props) => {
                 <Modal isOpen={open} toggle={toggle}>
                     <ModalHeader toggle={toggle}>Add Expense</ModalHeader>
                     <ModalBody>
+                        {formValidation && props.formErrors.expenseErrors !== undefined &&
+                            <Alert color="danger" isOpen={formValidation}>
+                                {props.formErrors.expenseErrors}
+                            </Alert>
+                        }
                         <Form>
                             <FormGroup>
                                 <Label>Expense Type</Label>
@@ -102,7 +135,7 @@ const AddExpenseModal = (props) => {
 }
 
 const ExpensesTable = (props) => (
-    <Row className={"mt-3 ml-5 mr-5"}>
+    <Row className={"mt-3 ml-5 mr-5 mb-5"}>
         <Table hover responsive bordered>
             <thead>
                 <tr>

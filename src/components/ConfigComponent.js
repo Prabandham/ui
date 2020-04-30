@@ -51,7 +51,7 @@ const IncomeSources = (props) => {
             <InputGroup>
                 <Input placeholder="Input Source" value={input} onChange={e => setInput(e.target.value)} />
                 <InputGroupAddon addonType="append">
-                    <InputGroupText onClick={onButtonClick}>Add</InputGroupText>
+                    <InputGroupText className="btn" onClick={onButtonClick}>Add</InputGroupText>
                 </InputGroupAddon>
             </InputGroup>
             <FormFeedback style={{ display: props.formErrors.incomeSourceErrors === undefined ? "none" : "block" }}>{props.formErrors.incomeSourceErrors}</FormFeedback>
@@ -152,7 +152,7 @@ const AddAccountModal = (props) => {
                 Add Account
             </Button>
             <Modal isOpen={open} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Add Expense</ModalHeader>
+                <ModalHeader toggle={toggle}>Add Account</ModalHeader>
                 <ModalBody>
                     {formValidation && props.formErrors.accountErrors !== undefined &&
                         <Alert color="danger" isOpen={formValidation}>

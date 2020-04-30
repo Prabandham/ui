@@ -1,6 +1,7 @@
 import "react-datepicker/dist/react-datepicker.css";
 
 import {
+    Alert,
     Button,
     Col,
     Form,
@@ -13,7 +14,7 @@ import {
     Row,
     Table
 } from "reactstrap";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Select from "react-select";
 import _ from "lodash";
@@ -46,16 +47,42 @@ const AddIncomeForm = (props) => {
     const [source, setSource] = useState("");
     const [amount, setAmount] = useState(0);
     const [account, setAccount] = useState("");
-    const toggle = () => setModal(!open);
+    const [formValidation, setFormValidation] = useState(false);
+    const [formSubmitted, setFormSubmitted] = useState(false);
+    const toggle = () => {
+        setModal(!open);
+        setSource("");
+        setAmount(0);
+        setAccount("");
+        setFormSubmitted(false);
+        if (formValidation) {
+            setFormValidation(!formValidation);
+        }
+    }
+
+    // Listen for props changes on formErrors
+    useEffect(() => {
+        // if the props has any errors in it, then show errors.
+        if (props.formErrors.incomeErrors !== undefined) {
+            setFormValidation(true)
+        }
+        // If the props has no error in it and the form was submitted then don't show any errors
+        // And close the modal
+        else if (props.formErrors.inomeErrors === undefined && formSubmitted) {
+            setFormValidation(false);
+            toggle();
+        }
+    }, [props.formErrors]);
+
     const addIncome = () => {
+        setFormSubmitted(true);
         props.addIncome({
             income_source_id: source,
-            amount: amount,
+            amount: Number(amount),
             account_id: account
         })
-        // TODO Handle error and then toggle
-        toggle();
     }
+
     return (
         <Row>
             <Col>
@@ -67,6 +94,11 @@ const AddIncomeForm = (props) => {
                 <Modal isOpen={open} toggle={toggle}>
                     <ModalHeader toggle={toggle}>Add Income</ModalHeader>
                     <ModalBody>
+                        {formValidation && props.formErrors.incomeErrors !== undefined &&
+                            <Alert color="danger" isOpen={formValidation}>
+                                {props.formErrors.incomeErrors}
+                            </Alert>
+                        }
                         <Form>
                             <FormGroup>
                                 <Select
@@ -109,14 +141,14 @@ const AddIncomeForm = (props) => {
 
 const Incomes = (props) => {
     return (
-        <Row className={"mt-3 ml-5 mr-5"}>
+        <Row className={"mt-3 ml-5 mr-5 mb-5"}>
             <Table hover responsive bordered>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Income Source</th>
-                        <th>Income Amount</th>
-                        <th>Account Name</th>
+                        <th>Source</th>
+                        <th>Amount</th>
+                        <th>Account</th>
                         <th>Received On</th>
                     </tr>
                 </thead>

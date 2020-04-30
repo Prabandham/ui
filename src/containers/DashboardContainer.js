@@ -124,9 +124,11 @@ export default class DashboardContainer extends Component {
                 let incomes = this.state.incomes;
                 incomes.push(response.data);
                 this.setState({
-                    incomes
+                    incomes,
+                    formErrors: {}
                 })
             })
+            .catch(error => { this.setState({ formErrors: { incomeErrors: ErrorHandler(error) } }) });
     };
 
     getExpenses = () => {
@@ -146,22 +148,19 @@ export default class DashboardContainer extends Component {
                 let expenses = this.state.expenses;
                 expenses.push(response.data);
                 this.setState({
-                    expenses
+                    expenses,
+                    formErrors: {}
                 })
             })
+            .catch(error => { this.setState({ formErrors: { expenseErrors: ErrorHandler(error) } }) });
     };
 
     setActiveTab = (event) => {
         const tabName = event.target.id.split("-")[1];
-        this.setState({
-            activeTab: tabName,
-        });
-        if (tabName === "income") {
-            this.getIncomes()
-        }
-        if (tabName === "expense") {
-            this.getExpenses()
-        }
+        this.setState({ activeTab: tabName });
+        if (tabName === "income") { this.getIncomes() };
+        if (tabName === "expense") { this.getExpenses() };
+        if (tabName === "config") { this.getAccounts() };
     };
 
     render() {
@@ -209,6 +208,7 @@ export default class DashboardContainer extends Component {
                                 addExpense={this.addExpense}
                                 expense_types={expenseTypes}
                                 expenses={expenses}
+                                formErrors={formErrors}
                             />
                         </div>
                         <div
@@ -220,6 +220,7 @@ export default class DashboardContainer extends Component {
                             <IncomeComponent
                                 addIncome={this.addIncome}
                                 accounts={accounts}
+                                formErrors={formErrors}
                                 incomes={incomes}
                                 incomeSources={incomeSources}
                             />
